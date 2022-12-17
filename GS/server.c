@@ -7,7 +7,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
-#define PORT "57000"
+#define PORT "58066"
 
 int fd,errcode;
 ssize_t n;
@@ -18,7 +18,7 @@ char buffer[128];
 
 int main(void)
 {
-    printf(stderr, "Helloskdflsdnf");
+    printf("Helloskdflsdnf");
     fd=socket(AF_INET,SOCK_DGRAM,0); //UDP socket
     if(fd==-1) /*error*/exit(1);
 
