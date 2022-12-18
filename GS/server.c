@@ -18,7 +18,6 @@ char buffer[128];
 
 int main(void)
 {
-    printf("Helloskdflsdnf");
     fd=socket(AF_INET,SOCK_DGRAM,0); //UDP socket
     if(fd==-1) /*error*/exit(1);
 
