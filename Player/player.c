@@ -48,8 +48,8 @@ struct addrinfo hints,*res;
 struct sockaddr_in addr;
 char buffer[128];
 
-char usedIP[17] = "127.0.0.1"; //default IP address
-char usedPort[6]="58066"; //default Port
+char defaultIP[17] = "127.0.0.1"; //default IP address
+char defaultPort[6]="58066"; //default Port
 
 //#define invalid_format_msg= "./player [-n GSIP] [-p GSport], \nwhere:\nGSIP is the IP address of the machine where the game server (GS) runs. This is an optional argument. If this argument is omitted, the GS should be running on the same machine.\nGSport is the well-known port (TCP and UDP) where the GS accepts requests. This is an optional argument. If omitted, it assumes the value 58066.\n";
 
@@ -76,7 +76,7 @@ int isIP(char* IP){
         return 0;
     }
     for (int i = 0; i < strlen(IP); i++) {
-        usedIP[i]=IP[i];
+        defaultIP[i]=IP[i];
     }
     return 1;
 }
@@ -92,7 +92,7 @@ int isPort(char* Port){
         return 0;
     }
     for (int i = 0; i < strlen(Port); i++) {
-        usedPort[i] = Port[i];
+        defaultPort[i] = Port[i];
     }
     return 1;
 }
@@ -141,7 +141,7 @@ int main(int argc, char* argv[])
     int n_flag=-1, p_flag=-1;
     int quit_app=0;
     int rc;
-    char buff[3];
+    char buff[100];
 
     if (argc>5){
         printf("Invalid argument format: illegal number of parameters\n");
@@ -215,7 +215,10 @@ int main(int argc, char* argv[])
         memset(&hints,0,sizeof hints);
         hints.ai_family=AF_INET; //IPv4
         hints.ai_socktype=SOCK_DGRAM; //UDP socket
-        errcode=getaddrinfo(usedIP,usedPort,&hints,&res);
+        errcode=getaddrinfo(defaultIP,defaultPort,&hints,&res);
+        printf("%s",res->ai_addr);
+
+        quit_app=1;
 
         if(errcode!=0) /*error*/ exit(1);
 
@@ -238,12 +241,4 @@ int main(int argc, char* argv[])
 
     return 0;
     
-    
-
-    
-
-
-    
-
-    return 0;
 }
