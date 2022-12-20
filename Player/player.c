@@ -99,7 +99,7 @@ int isPort(char* Port){
 }
 
 //USER INPUT
-//getLine: reads a line from the stdin.
+//getLine(): reads a line from the stdin.
 static int getLine (char *prmpt, char *buff, size_t sz) {
     int ch, extra;
 
@@ -143,29 +143,29 @@ int main(int argc, char* argv[])
     int quit_app=0;
 
     if (argc>5){
-        printf("Invalid argument format: illegal number of parameters\n");
+        printf("Invalid argument format: invalid number of parameters\n");
         return 0;
     }
     switch (argc){
-        case 2: printf("Invalid argument format: illegal number of parameters\n");
+        case 2: printf("Invalid argument format: invalid number of parameters\n");
             return 0;
             break;
 
         case 3: n_flag=strcmp(argv[1],"-n");
             p_flag=strcmp(argv[1], "-p");
             if (n_flag!=0 && p_flag!=0) {
-                printf("Invalid argument format: illegal options\n");
+                printf("Invalid argument format: invalid options\n");
                 return 0;
             }
             if (n_flag==0 && isIP(argv[2])!=0){}
             else if (p_flag==0 && isPort(argv[2])!=0){}
             else{
-                printf("Invalid argument format: illegal parameter value\n");
+                printf("Invalid argument format: invalid parameter value\n");
                 return 0;
             }
             break;
 
-        case 4: printf("Invalid argument format: illegal number of parameters\n");
+        case 4: printf("Invalid argument format: invalid number of parameters\n");
             return 0;
             break;
 
@@ -174,14 +174,14 @@ int main(int argc, char* argv[])
 
             if ((n_flag==0 && strcmp(argv[3], "-p")!=0) || 
             (p_flag==0 && strcmp(argv[3], "-n")!=0)){
-                printf("Invalid argument format: illegal options\n");
+                printf("Invalid argument format: invalid options\n");
                 return 0;
             }
             
             if ((n_flag==0 && isIP(argv[2])!=0 && strcmp(argv[3], "-p")==0 && isPort(argv[4])!=0) || 
             (p_flag==0 && isPort(argv[2])!=0 && strcmp(argv[3], "-n")==0 && isIP(argv[4])!=0) ) {}
             else{
-                printf("Invalid argument format: illegal parameter value\n");
+                printf("Invalid argument format: invalid parameter value\n");
                 return 0;
             }
             break;
@@ -209,21 +209,9 @@ int main(int argc, char* argv[])
         }
 
         printf("OK [%s]\n", buff);
-        
-
-        int str_size=0;
-        for (; buff[str_size] != '\0'; ++str_size);
-        printf("String len: %d", str_size);
-
-        // DELETE!
-        //break point
-        quit_app=1;
-        break;
-
-        //Leaving this here for later: For the communication protocols PLID is always sent using 6 digits.
-        
 
         fd=socket(AF_INET,SOCK_DGRAM,0); //UDP socket
+        
         if(fd==-1) /*error*/exit(1);
 
         memset(&hints,0,sizeof hints);
@@ -231,8 +219,11 @@ int main(int argc, char* argv[])
         hints.ai_socktype=SOCK_DGRAM; //UDP socket
 
         errcode=getaddrinfo(defaultIP,defaultPort,&hints,&res);
-        printf("%s",res->ai_addr);
+        printf("%s",defaultPort);
         if(errcode!=0) /*error*/ exit(1);
+
+        int str_size=0; 
+        for (; buff[str_size] != '\0'; ++str_size);
 
         n=sendto(fd,buff,str_size,0,res->ai_addr,res->ai_addrlen);
         if(n==-1) /*error*/ exit(1);
@@ -240,7 +231,7 @@ int main(int argc, char* argv[])
         addrlen=sizeof(addr);
         n=recvfrom(fd,buffer,128,0,(struct sockaddr*)&addr,&addrlen);
         if(n==-1) /*error*/ exit(1);
-        
+
         str_size=0;
         for (; buff[str_size] != '\0'; ++str_size);
         write(1,"echo: ",str_size+6); 

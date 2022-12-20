@@ -27,7 +27,7 @@ char buffer[128];
 //isVerboseParamValid: returns 0 if 3rd param is -v
 int isVerboseParamValid(char* param){
     if (strcmp(param,"-v")){
-        printf("Invalid argument format: illegal parameter value\n");
+        printf("Invalid argument format: invalid parameter value\n");
         printf("Try -v, instead of %s\n", param);
     }
     return strcmp(param,"-v");
@@ -36,7 +36,7 @@ int isVerboseParamValid(char* param){
 //isPortParamValid: returns 0 if 3rd param is -p
 int isPortParamValid(char* param){
     if (strcmp(param,"-p")){
-        printf("Invalid argument format: illegal parameter value\n");
+        printf("Invalid argument format: invalid parameter value\n");
         printf("Try -p, instead of %s\n", param);
     }
     return strcmp(param,"-p");
@@ -46,13 +46,13 @@ int isPortParamValid(char* param){
 int isPortNumParamValid(char* param){
     for (int i = 0; i < strlen(param); i++) {
         if (param[i]<48 || param[i]>57){
-            printf("Invalid argument format: illegal parameter value\n");
+            printf("Invalid argument format: invalid parameter value\n");
             printf("Invalid character, must be a number: %c\n", param[i]);
             return 0;
         }
     }
     if (atoi(param)<58000 || atoi(param)>59000){
-        printf("Invalid argument format: illegal parameter value\n");
+        printf("Invalid argument format: invalid parameter value\n");
         printf("Invalid number, try between 58000 and 59000: %s\n", param);
         return 0;
     }
@@ -71,7 +71,7 @@ int main(int argc, char* argv[]){
     */
 
    if (argc>5){
-        printf("Invalid argument format: illegal number of parameters\n");
+        printf("Invalid argument format: invalid number of parameters\n");
     }
     switch (argc){
         case 2: printf("word file is %s\n", argv[1]);
