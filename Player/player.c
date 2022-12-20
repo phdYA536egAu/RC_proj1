@@ -19,7 +19,7 @@
 
     Resources:
     Makefile. 
-    Usage example, run these commands in the /Player directory: 
+    Usage example, run these commands from the /Player directory: 
     make clean
     make
     ./player
@@ -229,22 +229,22 @@ int main(int argc, char* argv[])
         memset(&hints,0,sizeof hints);
         hints.ai_family=AF_INET; //IPv4
         hints.ai_socktype=SOCK_DGRAM; //UDP socket
+
         errcode=getaddrinfo(defaultIP,defaultPort,&hints,&res);
         printf("%s",res->ai_addr);
-
-        
-
         if(errcode!=0) /*error*/ exit(1);
 
         n=sendto(fd,buff,str_size,0,res->ai_addr,res->ai_addrlen);
-
         if(n==-1) /*error*/ exit(1);
+
         addrlen=sizeof(addr);
         n=recvfrom(fd,buffer,128,0,(struct sockaddr*)&addr,&addrlen);
         if(n==-1) /*error*/ exit(1);
+        
         str_size=0;
         for (; buff[str_size] != '\0'; ++str_size);
-        write(1,"echo: ",str_size+6); write(1,buffer,n);
+        write(1,"echo: ",str_size+6); 
+        write(1,buffer,n);
 
         freeaddrinfo(res);
         close(fd);
