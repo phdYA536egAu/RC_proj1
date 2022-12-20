@@ -1,0 +1,5 @@
+- os comentarios no player.c contem muito mais info 
+que os do server.c, devia ser mais uniforme.
+
+- no player.c, o comentario do USER INPUT no main eh muito mais pequeno
+que o da APP VALIDATION (no main). Devia ser mais uniforme. 

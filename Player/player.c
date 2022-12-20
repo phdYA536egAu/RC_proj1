@@ -1,3 +1,4 @@
+//player.c
 
 //RC LEIC-a
 //Grupo 66
@@ -88,7 +89,7 @@ int isPort(char* Port){
             return 0;
         }
     }
-    if (atoi(Port)<2 || atoi(Port)>65535){
+    if (atoi(Port)<58000 || atoi(Port)>59000){
         return 0;
     }
     for (int i = 0; i < strlen(Port); i++) {
@@ -140,51 +141,59 @@ int main(int argc, char* argv[])
 
     int n_flag=-1, p_flag=-1;
     int quit_app=0;
-    int rc;
-    char buff[100];
 
     if (argc>5){
         printf("Invalid argument format: illegal number of parameters\n");
+        return 0;
     }
     switch (argc){
         case 2: printf("Invalid argument format: illegal number of parameters\n");
+            return 0;
             break;
 
         case 3: n_flag=strcmp(argv[1],"-n");
             p_flag=strcmp(argv[1], "-p");
             if (n_flag!=0 && p_flag!=0) {
                 printf("Invalid argument format: illegal options\n");
+                return 0;
             }
             if (n_flag==0 && isIP(argv[2])!=0){}
             else if (p_flag==0 && isPort(argv[2])!=0){}
             else{
-                 printf("Invalid argument format: illegal parameter value\n");
+                printf("Invalid argument format: illegal parameter value\n");
+                return 0;
             }
             break;
 
         case 4: printf("Invalid argument format: illegal number of parameters\n");
+            return 0;
             break;
 
         case 5: n_flag=strcmp(argv[1],"-n");
-        p_flag=strcmp(argv[1], "-p");
-        if ((n_flag==0 && strcmp(argv[3], "-p")!=0) || 
-        (p_flag==0 && strcmp(argv[3], "-n")!=0)){
-            printf("Invalid argument format: illegal options\n");
-        }
-        if ((n_flag==0 && isIP(argv[2])!=0 && strcmp(argv[3], "-p")==0 && isPort(argv[4])!=0) || 
-        (p_flag==0 && isPort(argv[2])!=0 && strcmp(argv[3], "-n")==0 && isIP(argv[4])!=0) 
-        ) {
-        }
-        else{
-            printf("Invalid argument format: illegal parameter value\n");
-        }
-        break;
+            p_flag=strcmp(argv[1], "-p");
+
+            if ((n_flag==0 && strcmp(argv[3], "-p")!=0) || 
+            (p_flag==0 && strcmp(argv[3], "-n")!=0)){
+                printf("Invalid argument format: illegal options\n");
+                return 0;
+            }
+            
+            if ((n_flag==0 && isIP(argv[2])!=0 && strcmp(argv[3], "-p")==0 && isPort(argv[4])!=0) || 
+            (p_flag==0 && isPort(argv[2])!=0 && strcmp(argv[3], "-n")==0 && isIP(argv[4])!=0) ) {}
+            else{
+                printf("Invalid argument format: illegal parameter value\n");
+                return 0;
+            }
+            break;
     }
 
     //USER INPUT
     /*
         While loop that handles user command input
     */
+
+    int rc;
+    char buff[100];
 
     while(quit_app != 1){
         rc = getLine ("Enter string> ", buff, sizeof(buff));
@@ -206,8 +215,13 @@ int main(int argc, char* argv[])
         for (; buff[str_size] != '\0'; ++str_size);
         printf("String len: %d", str_size);
 
-        for(int l=0; l<str_size; ++l)
-        printf("String: %c", buff[l]);
+        // DELETE!
+        //break point
+        quit_app=1;
+        break;
+
+        //Leaving this here for later: For the communication protocols PLID is always sent using 6 digits.
+        
 
         fd=socket(AF_INET,SOCK_DGRAM,0); //UDP socket
         if(fd==-1) /*error*/exit(1);
@@ -218,7 +232,7 @@ int main(int argc, char* argv[])
         errcode=getaddrinfo(defaultIP,defaultPort,&hints,&res);
         printf("%s",res->ai_addr);
 
-        quit_app=1;
+        
 
         if(errcode!=0) /*error*/ exit(1);
 
