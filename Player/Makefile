@@ -4,7 +4,7 @@ OBJS =   player.c
 CFLAG = -Wall -g
 CC = gcc
 INCLUDE =
-LIBS = -lm
+LIBS = 
 
 
 player:

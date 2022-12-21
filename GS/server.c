@@ -139,6 +139,13 @@ int main(int argc, char* argv[]){
     freeaddrinfo(res);
     close(fd);
 
+    //TCP SERVER
+    /*
+        
+    */
+
+   
+
 
     return 0;
 }

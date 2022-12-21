@@ -100,7 +100,7 @@ int isPort(char* Port){
 
 //USER INPUT
 //getLine(): reads a line from the stdin.
-static int getLine (char *prmpt, char *buff, size_t sz) {
+int getLine (char *prmpt, char *buff, size_t sz) {
     int ch, extra;
 
     // Line with buffer overrun protection.
@@ -123,6 +123,32 @@ static int getLine (char *prmpt, char *buff, size_t sz) {
     // Otherwise remove newline and give string back to caller.
     buff[strlen(buff)-1] = '\0';
     return OK;
+}
+
+//validateInput(): returns 1 if valid, 0 if not. 
+int validateInput(int gL, char *input){
+    if (gL == NO_INPUT) {
+        // Extra NL since some systems don't output that on EOF.
+        printf("No input\n");
+        return 0;
+    }
+
+    if (gL == TOO_LONG) {
+        printf("Input too long\n");
+        return 0;
+    }
+
+    if (!strcmp("start", input)){
+        printf("SNG PLID\n");
+        return 0;
+    }
+
+    if (!strcmp("quit", input)  || !strcmp("exit", input)){
+        printf("QUT PLID\n");
+        return 0;
+    }
+
+    return 1;
 }
 
 int main(int argc, char* argv[])
@@ -192,23 +218,15 @@ int main(int argc, char* argv[])
         While loop that handles user command input
     */
 
-    int rc;
+    int gL;
     char buff[100];
 
     while(quit_app != 1){
-        rc = getLine ("Enter string> ", buff, sizeof(buff));
-        if (rc == NO_INPUT) {
-            // Extra NL since my system doesn't output that on EOF.
-            printf("\nNo input\n");
-            return 1;
-        }
+        gL = getLine ("Enter string> ", buff, sizeof(buff));
+        
+        validateInput(gL, buff);
 
-        if (rc == TOO_LONG) {
-            printf("Input too long [%s]\n", buff);
-            return 1;
-        }
-
-        printf("OK [%s]\n", buff);
+        //printf("input ok [%d]\n", a);
 
         fd=socket(AF_INET,SOCK_DGRAM,0); //UDP socket
         
@@ -220,7 +238,10 @@ int main(int argc, char* argv[])
 
         errcode=getaddrinfo(defaultIP,defaultPort,&hints,&res);
         printf("%s",defaultPort);
-        if(errcode!=0) /*error*/ exit(1);
+        if(errcode!=0) /*error*/ {
+            printf("#1 Error. Try again later. \n");
+            exit(1);
+        }
 
         int str_size=0; 
         for (; buff[str_size] != '\0'; ++str_size);

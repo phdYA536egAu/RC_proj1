@@ -4,7 +4,7 @@ OBJS =   server.c
 CFLAG = -Wall -g
 CC = gcc
 INCLUDE =
-LIBS = -lm
+LIBS = 
 
 
 
