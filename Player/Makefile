@@ -1,5 +1,6 @@
 SHELL = /bin/sh
 
+#UDP
 OBJS =   player.c
 CFLAG = -Wall -g
 CC = gcc
@@ -16,4 +17,15 @@ clean:
 
 .cpp.o:
 	${CC} ${CFLAGS} ${INCLUDES} -c $<
+
+u:
+	make clean
+	make player
+	
+
+
+#TCP TEST
+t:
+	gcc -o t tcpTestPlayer.c
+	./t   
 
