@@ -18,7 +18,7 @@ clean:
 .cpp.o:
 	${CC} ${CFLAGS} ${INCLUDES} -c $<
 
-u:
+a:
 	make clean
 	make player
 	

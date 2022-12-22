@@ -52,7 +52,7 @@ char buffer[128];
 char defaultIP[17] = "127.0.0.1"; //default IP address
 char defaultPort[6]="58066"; //default Port
 
-//#define invalid_format_msg= "./player [-n GSIP] [-p GSport], \nwhere:\nGSIP is the IP address of the machine where the game server (GS) runs. This is an optional argument. If this argument is omitted, the GS should be running on the same machine.\nGSport is the well-known port (TCP and UDP) where the GS accepts requests. This is an optional argument. If omitted, it assumes the value 58066.\n";
+char msg_to_send[20];
 
 //VALIDATION OF APP ARGUMENTS 
 //isIP: returns 1 if an IP is valid, 0 otherwise.
@@ -137,18 +137,34 @@ int validateInput(int gL, char *input){
         printf("Input too long\n");
         return 0;
     }
-
-    if (!strcmp("start", input)){
-        printf("SNG PLID\n");
-        return 0;
+    
+    char command[20];
+    char arg[7];
+    int space_found=0, space_index;
+    for (int i=0;i<strlen(input); i++){
+        if (input[i]==32){
+            strncpy(command, input, i);
+            space_found=1;
+            space_index=i;
+        }
+        if (space_found) arg[i-space_index-1]=input[i];
     }
 
-    if (!strcmp("quit", input)  || !strcmp("exit", input)){
+    if (!strcmp("start", command)){
+        //printf("SNG %s\n", arg);
+        strcpy(msg_to_send, strcat("SNG ", arg));
+        printf("%s\n",msg_to_send);
+        printf("successfully joined msgs");
+        //zsh: illegal hardware instruction  ./player
+        return 1;
+    }
+
+    if (!strcmp("quit", command)  || !strcmp("exit", command)){
         printf("QUT PLID\n");
-        return 0;
+        return 1;
     }
 
-    return 1;
+    return 0;
 }
 
 int main(int argc, char* argv[])
@@ -224,7 +240,9 @@ int main(int argc, char* argv[])
     while(quit_app != 1){
         gL = getLine ("Enter string> ", buff, sizeof(buff));
         
-        validateInput(gL, buff);
+        if(validateInput(gL, buff)){
+            printf("segundo");
+        }
 
         //printf("input ok [%d]\n", a);
 
@@ -237,7 +255,6 @@ int main(int argc, char* argv[])
         hints.ai_socktype=SOCK_DGRAM; //UDP socket
 
         errcode=getaddrinfo(defaultIP,defaultPort,&hints,&res);
-        printf("%s",defaultPort);
         if(errcode!=0) /*error*/ {
             printf("#1 Error. Try again later. \n");
             exit(1);
@@ -253,9 +270,7 @@ int main(int argc, char* argv[])
         n=recvfrom(fd,buffer,128,0,(struct sockaddr*)&addr,&addrlen);
         if(n==-1) /*error*/ exit(1);
 
-        str_size=0;
-        for (; buff[str_size] != '\0'; ++str_size);
-        write(1,"echo: ",str_size+6); 
+        write(1,"echo: ",strlen(buff)+6); 
         write(1,buffer,n);
 
         freeaddrinfo(res);

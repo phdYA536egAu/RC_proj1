@@ -1,5 +1,6 @@
 SHELL = /bin/sh
 
+#UDP
 OBJS =   server.c
 CFLAG = -Wall -g
 CC = gcc
@@ -18,4 +19,8 @@ clean:
 .cpp.o:
 	${CC} ${CFLAGS} ${INCLUDES} -c $<
 
-	
+#TCP
+
+t:
+	gcc -o t tcpTestServer.c
+	./t

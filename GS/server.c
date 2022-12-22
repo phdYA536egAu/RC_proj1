@@ -16,12 +16,19 @@
 #include <netdb.h>
 
 char defaultPort[6]="58066"; //default Port
-int fd,errcode;
-ssize_t n;
-socklen_t addrlen;
-struct addrinfo hints,*res;
-struct sockaddr_in addr;
-char buffer[128];
+int udp_fd,udp_errcode;
+ssize_t udp_n;
+socklen_t udp_addrlen;
+struct addrinfo udp_hints,*udp_res;
+struct sockaddr_in udp_addr;
+char udp_buffer[128];
+
+int tcp_fd,newtcp_fd,tcp_errcode;
+ssize_t tcp_n;
+socklen_t tcp_addrlen;
+struct addrinfo tcp_hints,*tcp_res;
+struct sockaddr_in tcp_addr;
+char tcp_buffer[128];
 
 //VALIDATION OF APP ARGUMENTS 
 //isVerboseParamValid: returns 0 if 3rd param is -v
@@ -111,40 +118,40 @@ int main(int argc, char* argv[]){
         
     */
 
-    fd=socket(AF_INET,SOCK_DGRAM,0); //UDP socket
-    if(fd==-1) /*error*/exit(1);
+    udp_fd=socket(AF_INET,SOCK_DGRAM,0); //UDP socket
+    if(udp_fd==-1) /*error*/exit(1);
 
-    memset(&hints,0,sizeof hints);
-    hints.ai_family=AF_INET; // IPv4
-    hints.ai_socktype=SOCK_DGRAM; // UDP socket
-    hints.ai_flags=AI_PASSIVE;
+    memset(&udp_hints,0,sizeof udp_hints);
+    udp_hints.ai_family=AF_INET; // IPv4
+    udp_hints.ai_socktype=SOCK_DGRAM; // UDP socket
+    udp_hints.ai_flags=AI_PASSIVE;
 
-    errcode=getaddrinfo(NULL,defaultPort,&hints,&res);
-    if(errcode!=0) /*error*/ exit(1);
+    udp_errcode=getaddrinfo(NULL,defaultPort,&udp_hints,&udp_res);
+    if(udp_errcode!=0) /*error*/ exit(1);
 
-    n=bind(fd,res->ai_addr, res->ai_addrlen);
-    if(n==-1) /*error*/ exit(1);
+    udp_n=bind(udp_fd,udp_res->ai_addr, udp_res->ai_addrlen);
+    if(udp_n==-1) /*error*/ exit(1);
 
     while (1){
-        addrlen=sizeof(addr);
+        udp_addrlen=sizeof(udp_addr);
 
-        n=recvfrom(fd,buffer,128,0,(struct sockaddr*)&addr,&addrlen);
-        if(n==-1)/*error*/exit(1);
+        udp_n=recvfrom(udp_fd,udp_buffer,128,0,(struct sockaddr*)&udp_addr,&udp_addrlen);
+        if(udp_n==-1)/*error*/exit(1);
         write(1,"received: ",10);
-        write(1,buffer,n);
+        write(1,udp_buffer,udp_n);
 
-        n=sendto(fd,buffer,n,0,(struct sockaddr*)&addr,addrlen);
-        if(n==-1)/*error*/exit(1);
+        udp_n=sendto(udp_fd,udp_buffer,udp_n,0,(struct sockaddr*)&udp_addr,udp_addrlen);
+        if(udp_n==-1)/*error*/exit(1);
     }
-    freeaddrinfo(res);
-    close(fd);
+    freeaddrinfo(udp_res);
+    close(udp_fd);
 
     //TCP SERVER
     /*
         
     */
 
-   
+
 
 
     return 0;
