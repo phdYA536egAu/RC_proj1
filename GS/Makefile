@@ -1,26 +1,28 @@
 SHELL = /bin/sh
 
 #UDP
-OBJS =   server.c
-CFLAG = -Wall -g
+OBJS = server.c
+CFLAGS = -Wall -g
 CC = gcc
 INCLUDE =
 LIBS = 
 
 
-
 server:
 	${OBJ}
-	${CC} ${CFLAGS} ${INCLUDES} -o $@ ${OBJS} ${LIBS}
+	${CC} ${CFLAG} ${INCLUDES} -o $@ ${OBJS} ${LIBS}
 
 clean:
-	-rm -f server core *.core
+	-rm -f server
 
-.cpp.o:
-	${CC} ${CFLAGS} ${INCLUDES} -c $<
+a:
+	make clean
+	make server
+	
 
-#TCP
 
+#TCP TEST
 t:
 	gcc -o t tcpTestServer.c
-	./t
+	./t   
+

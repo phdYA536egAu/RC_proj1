@@ -2,7 +2,7 @@ SHELL = /bin/sh
 
 #UDP
 OBJS =   player.c
-CFLAG = -Wall -g
+CFLAGS = -Wall -g
 CC = gcc
 INCLUDE =
 LIBS = 
@@ -10,13 +10,10 @@ LIBS =
 
 player:
 	${OBJ}
-	${CC} ${CFLAGS} ${INCLUDES} -o $@ ${OBJS} ${LIBS}
+	${CC} ${CFLAG} ${INCLUDES} -o $@ ${OBJS} ${LIBS}
 
 clean:
-	-rm -f player core *.core
-
-.cpp.o:
-	${CC} ${CFLAGS} ${INCLUDES} -c $<
+	-rm -f player
 
 a:
 	make clean

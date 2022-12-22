@@ -140,8 +140,73 @@ int main(int argc, char* argv[]){
         write(1,"received: ",10);
         write(1,udp_buffer,udp_n);
 
+        char command[5];
+        char arg[7];
+        int space_found=0, space_index;
+
+        for (int i=0; i<7; i++){
+            arg[i]='\0';
+        }
+
+        printf("u: %s", udp_buffer);
+
+        int i=0;
+        for (;i<strlen(udp_buffer);){
+            if (udp_buffer[i]==32){
+                space_found=1;
+                space_index=i;
+            }
+            if (space_found) arg[i-space_index-1]=udp_buffer[i];
+            i++;
+        }
+        if (space_found) strncpy(command, udp_buffer, space_index);
+        else{strncpy(command, udp_buffer, i);}
+        /*for(int i=0; i<128; i++){
+            msg_to_send[i]='\0';
+        }
+        if (!strcmp("start", command) && space_found && !game_started){
+            strcat(msg_to_send,"SNG ");
+            strcat(msg_to_send, arg);
+
+            for (int i=0; i<7; i++){
+                thisPLID[i]='\0';
+            }
+            strcat(thisPLID, arg);
+            game_started = 1;
+            return 1;
+        }*/
+
+        printf("c: %s\na: %s\n", command, arg);
+
+        if (!strcmp(command,"SNG")){
+            printf("Game started %s\n", arg);
+            udp_n=sendto(udp_fd,"RSG OK",6,0,(struct sockaddr*)&udp_addr,udp_addrlen);
+            if(udp_n==-1)/*error*/exit(1);
+        }
+        if (!strcmp(command,"QUT")){
+            printf("Game ended %s\n", arg);
+        }
+        else{
+        /*printf("other PLID \n");
         udp_n=sendto(udp_fd,udp_buffer,udp_n,0,(struct sockaddr*)&udp_addr,udp_addrlen);
-        if(udp_n==-1)/*error*/exit(1);
+        if(udp_n==-1)/*error*//*exit(1);*/
+        }
+
+        /*if (!strcmp(command,"QUT") && !strcmp(arg,"175230")){
+            printf("Game ended %s\n", arg);
+            udp_n=sendto(udp_fd,udp_buffer,udp_n,0,(struct sockaddr*)&udp_addr,udp_addrlen);
+            if(udp_n==-1)/*error*//*exit(1);
+            udp_n=sendto(udp_fd,"Game ended by Player",udp_n,0,(struct sockaddr*)&udp_addr,udp_addrlen);
+            if(udp_n==-1)/*error*//*exit(1);
+
+        }
+        else{
+            printf("Unexpected msg or other PLID \n");
+            udp_n=sendto(udp_fd,udp_buffer,udp_n,0,(struct sockaddr*)&udp_addr,udp_addrlen);
+            if(udp_n==-1)/*error*//*exit(1);
+        }*/
+
+        
     }
     freeaddrinfo(udp_res);
     close(udp_fd);

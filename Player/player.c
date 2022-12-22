@@ -50,9 +50,12 @@ struct sockaddr_in addr;
 char buffer[128];
 
 char defaultIP[17] = "127.0.0.1"; //default IP address
-char defaultPort[6]="58066"; //default Port
+char defaultPort[6] = "58066"; //default Port
 
-char msg_to_send[20];
+char msg_to_send[128];
+char thisPLID[7];
+
+int game_started = 0;
 
 //VALIDATION OF APP ARGUMENTS 
 //isIP: returns 1 if an IP is valid, 0 otherwise.
@@ -99,8 +102,8 @@ int isPort(char* Port){
 }
 
 //USER INPUT
-//getLine(): reads a line from the stdin.
-int getLine (char *prmpt, char *buff, size_t sz) {
+//getCommand(): reads a line from the stdin.
+int getCommand (char *prmpt, char *buff, size_t sz) {
     int ch, extra;
 
     // Line with buffer overrun protection.
@@ -120,20 +123,14 @@ int getLine (char *prmpt, char *buff, size_t sz) {
         return (extra == 1) ? TOO_LONG : OK;
     }
 
-    // Otherwise remove newline and give string back to caller.
+    // Otherwise remove newline and return
     buff[strlen(buff)-1] = '\0';
     return OK;
 }
 
 //validateInput(): returns 1 if valid, 0 if not. 
-int validateInput(int gL, char *input){
-    if (gL == NO_INPUT) {
-        // Extra NL since some systems don't output that on EOF.
-        printf("No input\n");
-        return 0;
-    }
-
-    if (gL == TOO_LONG) {
+int validateInput(int rc, char *input){
+    if (rc == TOO_LONG) {
         printf("Input too long\n");
         return 0;
     }
@@ -141,27 +138,45 @@ int validateInput(int gL, char *input){
     char command[20];
     char arg[7];
     int space_found=0, space_index;
-    for (int i=0;i<strlen(input); i++){
+
+    for (int i=0; i<7; i++){
+        arg[i]='\0';
+    }
+
+    int i=0;
+    for (;i<strlen(input); ){
         if (input[i]==32){
-            strncpy(command, input, i);
             space_found=1;
             space_index=i;
         }
         if (space_found) arg[i-space_index-1]=input[i];
+        i++;
     }
+    if (space_found) strncpy(command, input, space_index);
+    else{strncpy(command, input, i);}
 
-    if (!strcmp("start", command)){
-        //printf("SNG %s\n", arg);
-        strcpy(msg_to_send, strcat("SNG ", arg));
-        printf("%s\n",msg_to_send);
-        printf("successfully joined msgs");
-        //zsh: illegal hardware instruction  ./player
+    for (int i=0; i<128; i++){
+        msg_to_send[i]='\0';
+    }
+    if (!strcmp("start", command) && space_found && !game_started){
+        strcat(msg_to_send,"SNG ");
+        strcat(msg_to_send, arg);
+
+        for (int i=0; i<7; i++){
+            thisPLID[i]='\0';
+        }
+        strcat(thisPLID, arg);
+        game_started = 1;
         return 1;
     }
 
-    if (!strcmp("quit", command)  || !strcmp("exit", command)){
-        printf("QUT PLID\n");
+    if (game_started && !strcmp("quit", command)){
+        strcat(msg_to_send,"QUT ");
+        strcat(msg_to_send, thisPLID);
         return 1;
+    }
+    else{
+        printf("There is no running game.\n");
     }
 
     return 0;
@@ -234,17 +249,26 @@ int main(int argc, char* argv[])
         While loop that handles user command input
     */
 
-    int gL;
+    int gC;
     char buff[100];
 
-    while(quit_app != 1){
-        gL = getLine ("Enter string> ", buff, sizeof(buff));
+    while(1){
+        gC = getCommand ("\nEnter command> ", buff, sizeof(buff));
+
+        if (!strcmp(buff, "exit")){
+            printf("\n- Bye! - \n");
+            break;
+        }
         
-        if(validateInput(gL, buff)){
-            printf("segundo");
+        if(!validateInput(gC, buff)){
+            printf("Invalid command/format.\n");
+            printf("To exit, write exit.\n");
+            printf("See more commands and correct format in the project documentation (pagina da cadeira)\n");
+        }
+        else{
+            printf("Sending message: [%s]\n\n",msg_to_send);
         }
 
-        //printf("input ok [%d]\n", a);
 
         fd=socket(AF_INET,SOCK_DGRAM,0); //UDP socket
         
@@ -260,26 +284,26 @@ int main(int argc, char* argv[])
             exit(1);
         }
 
-        int str_size=0; 
-        for (; buff[str_size] != '\0'; ++str_size);
-
-        n=sendto(fd,buff,str_size,0,res->ai_addr,res->ai_addrlen);
+        n=sendto(fd,msg_to_send,128,0,res->ai_addr,res->ai_addrlen);
         if(n==-1) /*error*/ exit(1);
 
         addrlen=sizeof(addr);
         n=recvfrom(fd,buffer,128,0,(struct sockaddr*)&addr,&addrlen);
         if(n==-1) /*error*/ exit(1);
 
-        write(1,"echo: ",strlen(buff)+6); 
+        write(1, "Server echo: [", 14);
         write(1,buffer,n);
+        write(1, "]\n", 2);
+
 
         freeaddrinfo(res);
         close(fd);
 
-        quit_app = 1;
-
+        if (!strcmp(buff, "quit")){
+            printf("Game ended.\n");
+            game_started = 0;
+        }
     }
 
     return 0;
-    
 }
