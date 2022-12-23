@@ -1,7 +1,7 @@
 SHELL = /bin/sh
 
 #UDP
-OBJS =   player.c
+OBJS = player.c
 CFLAGS = -Wall -g
 CC = gcc
 INCLUDE =
